@@ -1,0 +1,58 @@
+name: Deploy Basti Server
+
+on: 
+  push:
+    branches: 
+      - main
+
+env:
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  TF_VAR_DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+  TF_VAR_DB_USER: ${{ secrets.DB_USER }}
+  TF_VAR_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  TF_VAR_DB_CLUSTER: ${{ secrets.DB_CLUSTER }}
+  TF_VAR_DB_NAME: ${{ secrets.DB_NAME }}
+  TF_VAR_DOMAIN: ${{ secrets.DOMAIN }}
+  TF_VAR_USER_EMAIL: ${{ secrets.USER_EMAIL }}
+
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.2
+          terraform_wrapper: false
+
+      - name: Create SSH Keys from secrets
+        run: |
+          mkdir -p keys
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./keys/keysFinal
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > ./keys/keysFinal.pub
+          chmod 600 ./keys/keysFinal
+          chmod 600 ./keys/keysFinal.pub
+          
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform format
+        run: terraform fmt
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan
+
+      - name: Terraform apply
+        run: terraform apply --auto-approve
+
+            
+            

@@ -1,0 +1,53 @@
+services:
+  reverse-proxy:
+    image: nginxproxy/nginx-proxy:alpine
+    container_name: "Reverse-proxy"
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - VIRTUAL_HOST=${DOMAIN}
+      - VIRTUAL_PATH=./well_known
+
+    volumes:
+      - /volumes/nginx/certs:/etc/nginx/certs:ro
+      - /volumes/nginx/vhostd:/etc/nginx/vhost.d
+      - /volumes/nginx/html:/usr/share/nginx/html:rw
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  lets-encrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: "Lets-Encrypt"
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=Reverse-proxy
+    volumes:
+      - /volumes/nginx/certs:/etc/nginx/certs
+      - /volumes/nginx/vhostd:/etc/nginx/vhost.d
+      - /volumes/nginx/html:/usr/share/nginx/html:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  
+  MarcoApi:
+    image: bastian13579/proyectofinal:latest
+    container_name: MarcoApi
+    expose:
+      - "3000"
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_CLUSTER: ${DB_CLUSTER}
+      DB_NAME: ${DB_NAME}
+      VIRTUAL_HOST: ${DOMAIN}
+      VIRTUAL_PATH: /
+      LETSENCRYPT_HOST: ${DOMAIN}
+      LETSENCRYPT_EMAIL: ${USER_EMAIL}
+      
+   
+
+  # todo-app:
+  #   image: juanfr97/juan-server-page:latest
+  #   container_name: TodoApp
+  #   expose:
+  #     - "80"
