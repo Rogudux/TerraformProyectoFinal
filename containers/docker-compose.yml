@@ -44,10 +44,3 @@ services:
       LETSENCRYPT_HOST: ${DOMAIN}
       LETSENCRYPT_EMAIL: ${USER_EMAIL}
       
-   
-
-  # todo-app:
-  #   image: juanfr97/juan-server-page:latest
-  #   container_name: TodoApp
-  #   expose:
-  #     - "80"
