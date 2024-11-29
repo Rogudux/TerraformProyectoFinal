@@ -33,7 +33,7 @@ services:
     image: bastian13579/proyectofinal:latest
     container_name: MarcoApi
     expose:
-      - "3000"
+      - "3033"
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
