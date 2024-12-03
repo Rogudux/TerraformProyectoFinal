@@ -140,7 +140,7 @@ output "ip" {
 # }
 
 # resource "null_resource" "copiar_contenedor" {
-#   depends_on = [null_resource.copiar_documento_adidas]
+#   depends_on = [null_resource.copir_documento_adidas]
 
 #   connection {
 #     type = "ssh"
